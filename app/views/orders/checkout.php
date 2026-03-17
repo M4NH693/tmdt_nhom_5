@@ -41,21 +41,9 @@
 
                     <h2 style="margin-top:30px;">💰 Phương thức thanh toán</h2>
                     <div class="payment-options">
-                        <label class="payment-option selected">
+                        <label class="payment-option selected flex-1">
                             <input type="radio" name="payment_method" value="cod" checked> 
-                            <i class="fas fa-money-bill-wave"></i> COD
-                        </label>
-                        <label class="payment-option">
-                            <input type="radio" name="payment_method" value="bank_transfer">
-                            <i class="fas fa-university"></i> Chuyển khoản
-                        </label>
-                        <label class="payment-option">
-                            <input type="radio" name="payment_method" value="e_wallet">
-                            <i class="fas fa-wallet"></i> Ví điện tử
-                        </label>
-                        <label class="payment-option">
-                            <input type="radio" name="payment_method" value="credit_card">
-                            <i class="fas fa-credit-card"></i> Thẻ tín dụng
+                            <i class="fas fa-money-bill-wave"></i> COD (Thanh toán khi nhận hàng)
                         </label>
                     </div>
                 </div>
@@ -66,7 +54,7 @@
                     <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-light);align-items:center;">
                         <div style="width:50px;height:65px;border-radius:4px;overflow:hidden;background:var(--bg-secondary);flex-shrink:0;">
                             <?php if (!empty($item->cover_image)): ?>
-                                <img src="<?= BASE_URL ?>/images/books/<?= $item->cover_image ?>" style="width:100%;height:100%;object-fit:cover;">
+                                <img src="<?= BASE_URL . (strpos($item->cover_image, '/') === 0 ? $item->cover_image : '/images/books/' . $item->cover_image) ?>" style="width:100%;height:100%;object-fit:cover;">
                             <?php else: ?>
                                 <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">📚</div>
                             <?php endif; ?>

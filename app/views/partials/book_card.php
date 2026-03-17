@@ -9,7 +9,7 @@ for ($s = 1; $s <= 5; $s++) {
 <div class="book-card">
     <div class="book-card-image">
         <?php if (!empty($book->cover_image)): ?>
-            <img src="<?= BASE_URL ?>/images/books/<?= $book->cover_image ?>" alt="<?= htmlspecialchars($book->title) ?>">
+            <img src="<?= BASE_URL . (strpos($book->cover_image, '/') === 0 ? $book->cover_image : '/images/books/' . $book->cover_image) ?>" alt="<?= htmlspecialchars($book->title) ?>">
         <?php else: ?>
             <div class="book-card-placeholder">📚<span><?= htmlspecialchars(mb_substr($book->title, 0, 30)) ?></span></div>
         <?php endif; ?>

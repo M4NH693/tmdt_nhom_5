@@ -23,4 +23,13 @@ class User extends Model {
     public function verifyPassword($password, $hash) {
         return password_verify($password, $hash);
     }
+
+    public function updateAvatar($userId, $avatarUrl) {
+        return $this->update($userId, ['avatar_url' => $avatarUrl]);
+    }
+
+    public function updatePassword($userId, $newPassword) {
+        $hash = password_hash($newPassword, PASSWORD_BCRYPT);
+        return $this->update($userId, ['password_hash' => $hash]);
+    }
 }

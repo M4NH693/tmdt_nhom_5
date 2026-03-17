@@ -87,9 +87,12 @@ class AdminController extends Controller {
         $categories = $categoryModel->getAllActive();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Handle cover image
+            $coverImage = $this->uploadSingleImage('cover_image');
+
             $bookModel = $this->model('Book');
             $slug = $this->createSlug($_POST['title'] ?? '');
-            $bookModel->insert([
+            $bookId = $bookModel->insert([
                 'title'       => trim($_POST['title'] ?? ''),
                 'slug'        => $slug,
                 'isbn'        => trim($_POST['isbn'] ?? '') ?: null,
@@ -100,7 +103,18 @@ class AdminController extends Controller {
                 'publication_year' => (int)($_POST['publication_year'] ?? 0) ?: null,
                 'pages'       => (int)($_POST['pages'] ?? 0) ?: null,
                 'language'    => trim($_POST['language'] ?? 'Tiếng Việt'),
+                'cover_image' => $coverImage,
             ]);
+
+            // Handle preview images
+            $previewImages = $this->uploadMultipleImages('preview_images');
+            if (!empty($previewImages)) {
+                $db = Database::getInstance()->getConnection();
+                foreach ($previewImages as $idx => $imgUrl) {
+                    $stmt = $db->prepare("INSERT INTO book_images (book_id, image_url, sort_order) VALUES (?, ?, ?)");
+                    $stmt->execute([$bookId, $imgUrl, $idx]);
+                }
+            }
             $this->setFlash('success', 'Thêm sách thành công!');
             $this->redirect('admin/books');
             return;
@@ -118,7 +132,7 @@ class AdminController extends Controller {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $slug = $this->createSlug($_POST['title'] ?? '');
-            $bookModel->update($id, [
+            $updateData = [
                 'title'       => trim($_POST['title'] ?? ''),
                 'slug'        => $slug,
                 'isbn'        => trim($_POST['isbn'] ?? '') ?: null,
@@ -129,7 +143,27 @@ class AdminController extends Controller {
                 'publication_year' => (int)($_POST['publication_year'] ?? 0) ?: null,
                 'pages'       => (int)($_POST['pages'] ?? 0) ?: null,
                 'language'    => trim($_POST['language'] ?? 'Tiếng Việt'),
-            ]);
+            ];
+
+            $coverImage = $this->uploadSingleImage('cover_image');
+            if ($coverImage) {
+                $updateData['cover_image'] = $coverImage;
+            }
+
+            $bookModel->update($id, $updateData);
+
+            $previewImages = $this->uploadMultipleImages('preview_images');
+            if (!empty($previewImages)) {
+                $db = Database::getInstance()->getConnection();
+                $stmt = $db->prepare("SELECT MAX(sort_order) as mx FROM book_images WHERE book_id = ?");
+                $stmt->execute([$id]);
+                $maxSort = (int)$stmt->fetch()->mx;
+
+                foreach ($previewImages as $idx => $imgUrl) {
+                    $stmt = $db->prepare("INSERT INTO book_images (book_id, image_url, sort_order) VALUES (?, ?, ?)");
+                    $stmt->execute([$id, $imgUrl, $maxSort + 1 + $idx]);
+                }
+            }
             $this->setFlash('success', 'Cập nhật sách thành công!');
             $this->redirect('admin/books');
             return;
@@ -139,6 +173,7 @@ class AdminController extends Controller {
             'pageTitle'  => 'Sửa sách - Admin',
             'book'       => $book,
             'categories' => $categoryModel->getAllActive(),
+            'preview_images' => $bookModel->getImages($id),
         ];
         $this->adminView('books/form', $data);
     }
@@ -292,5 +327,59 @@ class AdminController extends Controller {
         $str = preg_replace('/[^a-z0-9\s-]/', '', $str);
         $str = preg_replace('/[\s-]+/', '-', $str);
         return trim($str, '-') . '-' . time();
+    }
+
+    private function uploadSingleImage($fileKey, $destinationDir = '/images/books/') {
+        if (!isset($_FILES[$fileKey]) || $_FILES[$fileKey]['error'] !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        $file = $_FILES[$fileKey];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        
+        if (!in_array($file['type'], $allowedTypes)) return null;
+        if ($file['size'] > 5 * 1024 * 1024) return null;
+
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $fileName = uniqid() . '_' . time() . '.' . $extension;
+        $uploadDir = BASE_PATH . '/public' . $destinationDir;
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        if (move_uploaded_file($file['tmp_name'], $uploadDir . $fileName)) {
+            return $destinationDir . $fileName;
+        }
+        return null;
+    }
+
+    private function uploadMultipleImages($fileKey, $destinationDir = '/images/books/') {
+        $uploadedUrls = [];
+        if (!isset($_FILES[$fileKey]) || empty($_FILES[$fileKey]['name'][0])) {
+            return $uploadedUrls;
+        }
+
+        $files = $_FILES[$fileKey];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        $uploadDir = BASE_PATH . '/public' . $destinationDir;
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        for ($i = 0; $i < count($files['name']); $i++) {
+            if ($files['error'][$i] !== UPLOAD_ERR_OK) continue;
+            if (!in_array($files['type'][$i], $allowedTypes)) continue;
+            if ($files['size'][$i] > 5 * 1024 * 1024) continue;
+
+            $extension = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
+            $fileName = uniqid() . '_' . time() . '_' . $i . '.' . $extension;
+
+            if (move_uploaded_file($files['tmp_name'][$i], $uploadDir . $fileName)) {
+                $uploadedUrls[] = $destinationDir . $fileName;
+            }
+        }
+        return $uploadedUrls;
     }
 }

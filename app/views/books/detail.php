@@ -24,17 +24,28 @@ for ($s = 1; $s <= 5; $s++) {
         <div class="book-gallery">
             <div class="book-main-image">
                 <?php if (!empty($book->cover_image)): ?>
-                    <img src="<?= BASE_URL ?>/images/books/<?= $book->cover_image ?>" alt="<?= htmlspecialchars($book->title) ?>">
+                    <img src="<?= BASE_URL . (strpos($book->cover_image, '/') === 0 ? $book->cover_image : '/images/books/' . $book->cover_image) ?>" id="mainBookImage" alt="<?= htmlspecialchars($book->title) ?>">
                 <?php else: ?>
                     <div class="placeholder">📖</div>
                 <?php endif; ?>
             </div>
             <?php if (!empty($images)): ?>
             <div class="book-thumbnails">
+                <?php if (!empty($book->cover_image)): ?>
+                    <img src="<?= BASE_URL . (strpos($book->cover_image, '/') === 0 ? $book->cover_image : '/images/books/' . $book->cover_image) ?>" class="thumbnail-img active" onclick="changeMainImage(this)" alt="<?= htmlspecialchars($book->title) ?>">
+                <?php endif; ?>
                 <?php foreach ($images as $img): ?>
-                    <img src="<?= BASE_URL ?>/images/books/<?= $img->image_url ?>" alt="ảnh">
+                    <img src="<?= BASE_URL . (strpos($img->image_url, '/') === 0 ? $img->image_url : '/images/books/' . $img->image_url) ?>" class="thumbnail-img" onclick="changeMainImage(this)" alt="ảnh">
                 <?php endforeach; ?>
             </div>
+            
+            <script>
+            function changeMainImage(element) {
+                document.getElementById('mainBookImage').src = element.src;
+                document.querySelectorAll('.thumbnail-img').forEach(el => el.classList.remove('active'));
+                element.classList.add('active');
+            }
+            </script>
             <?php endif; ?>
         </div>
 

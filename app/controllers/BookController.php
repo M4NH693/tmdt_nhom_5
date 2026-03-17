@@ -91,4 +91,20 @@ class BookController extends Controller {
 
         $this->view('books/search', $data);
     }
+
+    public function ajaxSearch() {
+        header('Content-Type: application/json');
+        $keyword = isset($_GET['q']) ? trim($_GET['q']) : '';
+        
+        if (empty($keyword)) {
+            echo json_encode([]);
+            return;
+        }
+
+        $bookModel = $this->model('Book');
+        $books = $bookModel->search($keyword, 5, 0); // Limit to 5 suggestions
+        
+        echo json_encode($books);
+        exit;
+    }
 }

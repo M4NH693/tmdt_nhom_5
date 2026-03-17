@@ -17,7 +17,7 @@
                 <div class="cart-item">
                     <div class="cart-item-image">
                         <?php if (!empty($item->cover_image)): ?>
-                            <img src="<?= BASE_URL ?>/images/books/<?= $item->cover_image ?>" alt="">
+                            <img src="<?= BASE_URL . (strpos($item->cover_image, '/') === 0 ? $item->cover_image : '/images/books/' . $item->cover_image) ?>" alt="">
                         <?php else: ?>
                             <div style="width:100%;height:100%;background:linear-gradient(135deg,#f0e6d3,#e8d5b7);display:flex;align-items:center;justify-content:center;font-size:2rem;">📚</div>
                         <?php endif; ?>

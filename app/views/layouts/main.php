@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="BookStore - Hiệu sách trực tuyến hàng đầu Việt Nam">
     <title><?= $pageTitle ?? 'BookStore' ?></title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/components.css">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/css/pages.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/components.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/pages.css?v=<?= time() ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -19,11 +19,12 @@
                 BookStore
             </a>
 
-            <form class="search-bar" action="<?= BASE_URL ?>/search" method="GET">
+            <form class="search-bar" action="<?= BASE_URL ?>/search" method="GET" style="position:relative;">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" name="q" placeholder="Tìm kiếm sách, tác giả..." 
-                       value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
+                <input type="text" name="q" id="searchInput" placeholder="Tìm kiếm sách, tác giả..." 
+                       value="<?= htmlspecialchars($_GET['q'] ?? '') ?>" autocomplete="off">
                 <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                <div id="searchSuggestions" class="search-suggestions-dropdown"></div>
             </form>
 
             <nav class="nav-links" id="navLinks">
@@ -35,15 +36,25 @@
                 </a>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
+                    <?php
+                    require_once APP_PATH . '/models/Cart.php';
+                    $cartModel = new Cart();
+                    $cartItemCount = $cartModel->getCartCount($_SESSION['user_id']);
+                    ?>
                     <a href="<?= BASE_URL ?>/cart" class="cart-link">
                         <i class="fas fa-shopping-cart"></i> Giỏ hàng
-                        <span class="cart-badge" id="cartBadge">0</span>
+                        <span class="cart-badge" id="cartBadge"><?= $cartItemCount ?></span>
                     </a>
                     <div class="user-menu">
                         <div class="user-avatar">
-                            <?= strtoupper(mb_substr($_SESSION['user_name'], 0, 1)) ?>
+                            <?php if (!empty($_SESSION['user_avatar'])): ?>
+                                <img src="<?= BASE_URL . $_SESSION['user_avatar'] ?>" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                            <?php else: ?>
+                                <?= strtoupper(mb_substr($_SESSION['user_name'], 0, 1)) ?>
+                            <?php endif; ?>
                         </div>
                         <div class="user-dropdown">
+                            <a href="<?= BASE_URL ?>/account"><i class="fas fa-user-circle"></i> Tài khoản</a>
                             <a href="<?= BASE_URL ?>/orders"><i class="fas fa-box"></i> Đơn hàng</a>
                             <div class="divider"></div>
                             <a href="<?= BASE_URL ?>/logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>

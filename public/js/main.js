@@ -92,6 +92,74 @@ document.addEventListener('DOMContentLoaded', function () {
             card.style.transform = index % 2 === 1 ? 'translateY(30px)' : 'translateY(0)';
         }, 100);
     });
+
+    // === Live Search Suggestions ===
+    const searchInput = document.getElementById('searchInput');
+    const searchSuggestions = document.getElementById('searchSuggestions');
+    let searchTimeout;
+
+    if (searchInput && searchSuggestions) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length < 1) {
+                searchSuggestions.style.display = 'none';
+                return;
+            }
+
+            // Debounce for 300ms
+            searchTimeout = setTimeout(() => {
+                fetch(`${window.location.origin}/tnmd_nhom_5/public/search/ajax?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        searchSuggestions.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(book => {
+                                const baseUrl = window.location.origin + '/tnmd_nhom_5/public';
+                                const imgSrc = book.cover_image ? 
+                                    (book.cover_image.startsWith('/') ? baseUrl + book.cover_image : baseUrl + '/images/books/' + book.cover_image) : 
+                                    'https://via.placeholder.com/40x55?text=Img';
+                                
+                                const author = book.authors ? book.authors : 'Đang cập nhật';
+                                
+                                const html = `
+                                    <a href="${baseUrl}/book/${book.book_id}" class="search-suggestion-item">
+                                        <img src="${imgSrc}" class="search-suggestion-img" alt="${book.title}">
+                                        <div class="search-suggestion-info">
+                                            <div class="search-suggestion-title">${book.title}</div>
+                                            <div class="search-suggestion-author">${author}</div>
+                                        </div>
+                                    </a>
+                                `;
+                                searchSuggestions.innerHTML += html;
+                            });
+                            searchSuggestions.style.display = 'block';
+                        } else {
+                            searchSuggestions.innerHTML = '<div style="padding:15px; color:#666; text-align:center;">Không tìm thấy kết quả</div>';
+                            searchSuggestions.style.display = 'block';
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Lỗi tìm kiếm:", err);
+                    });
+            }, 300);
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
+                searchSuggestions.style.display = 'none';
+            }
+        });
+
+        // Show suggestions again when focusing on input if it has value
+        searchInput.addEventListener('focus', function() {
+            if (this.value.trim().length > 0 && searchSuggestions.innerHTML !== '') {
+                searchSuggestions.style.display = 'block';
+            }
+        });
+    }
 });
 
 /**

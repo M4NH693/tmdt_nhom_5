@@ -6,11 +6,40 @@
 
 <div class="admin-card">
     <div class="admin-card-body">
-        <form method="POST" action="<?= BASE_URL ?>/admin/books/<?= $isEdit ? 'edit/' . $book->book_id : 'add' ?>">
-            <div class="admin-form-group">
-                <label for="title">Tên sách *</label>
-                <input type="text" name="title" id="title" class="admin-form-control"
-                       value="<?= htmlspecialchars($isEdit ? $book->title : '') ?>" required>
+        <form method="POST" action="<?= BASE_URL ?>/admin/books/<?= $isEdit ? 'edit/' . $book->book_id : 'add' ?>" enctype="multipart/form-data">
+            <div class="form-row">
+                <div class="admin-form-group" style="flex:2">
+                    <label for="title">Tên sách *</label>
+                    <input type="text" name="title" id="title" class="admin-form-control"
+                           value="<?= htmlspecialchars($isEdit ? $book->title : '') ?>" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="admin-form-group">
+                    <label for="cover_image"><i class="fas fa-image"></i> Ảnh bìa sách (Cover)</label>
+                    <input type="file" name="cover_image" id="cover_image" class="admin-form-control" accept="image/*">
+                    <?php if ($isEdit && !empty($book->cover_image)): ?>
+                        <div style="margin-top: 10px;">
+                            <img src="<?= BASE_URL . $book->cover_image ?>" alt="Cover" style="height: 100px; border-radius: 8px;">
+                            <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 4px;">Ảnh hiện tại</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="preview_images"><i class="fas fa-images"></i> Ảnh xem trước (Previews)</label>
+                    <input type="file" name="preview_images[]" id="preview_images" class="admin-form-control" accept="image/*" multiple>
+                    <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 6px;">Có thể chọn nhiều ảnh</p>
+                    
+                    <?php if ($isEdit && isset($preview_images) && !empty($preview_images)): ?>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+                            <?php foreach ($preview_images as $img): ?>
+                                <img src="<?= BASE_URL . $img->image_url ?>" alt="Preview" style="height: 60px; border-radius: 4px;">
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <div class="form-row">
