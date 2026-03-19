@@ -15,7 +15,7 @@ class OrderController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $orderModel = $this->model('Order');
             $subtotal = $cartModel->getCartTotal($_SESSION['user_id']);
-            $shippingFee = 30000; // phí ship cố định
+            $shippingFee = $subtotal >= 300000 ? 0 : 30000; // Miễn ship cho đơn >= 300k
 
             $orderData = [
                 'user_id'          => $_SESSION['user_id'],

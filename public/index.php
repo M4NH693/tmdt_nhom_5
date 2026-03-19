@@ -62,6 +62,7 @@ $router->add('admin/orders/detail/{id}', 'AdminController', 'orderDetail');
 $router->add('admin/orders/update-status/{id}', 'AdminController', 'updateOrderStatus');
 $router->add('admin/users', 'AdminController', 'users');
 $router->add('admin/users/toggle/{id}', 'AdminController', 'toggleUser');
+$router->add('admin/users/delete/{id}', 'AdminController', 'deleteUser');
 $router->add('admin/revenue-data', 'AdminController', 'revenueData');
 
 // Dispatch request

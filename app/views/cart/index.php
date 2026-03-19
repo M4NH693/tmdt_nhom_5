@@ -54,13 +54,16 @@
                     <span>Tạm tính</span>
                     <span><?= number_format($cartTotal, 0, ',', '.') ?>₫</span>
                 </div>
+                <?php 
+                    $shippingFeeDisplay = $cartTotal >= 300000 ? 0 : 30000;
+                ?>
                 <div class="cart-summary-row">
                     <span>Phí vận chuyển</span>
-                    <span>30.000₫</span>
+                    <span><?= $shippingFeeDisplay == 0 ? 'Miễn phí' : number_format($shippingFeeDisplay, 0, ',', '.') . '₫' ?></span>
                 </div>
                 <div class="cart-summary-row total">
                     <span>Tổng cộng</span>
-                    <span class="text-error"><?= number_format($cartTotal + 30000, 0, ',', '.') ?>₫</span>
+                    <span class="text-error"><?= number_format($cartTotal + $shippingFeeDisplay, 0, ',', '.') ?>₫</span>
                 </div>
                 <a href="<?= BASE_URL ?>/checkout" class="btn btn-primary btn-lg">
                     <i class="fas fa-credit-card"></i> Thanh toán

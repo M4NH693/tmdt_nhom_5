@@ -15,7 +15,17 @@ class CartController extends Controller {
     }
 
     public function add() {
-        $this->requireLogin();
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+        if ($isAjax) {
+            if (!$this->isLoggedIn()) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Vui lòng đăng nhập để tiếp tục.', 'redirect' => BASE_URL . '/login']);
+                exit;
+            }
+        } else {
+            $this->requireLogin();
+        }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $bookId   = (int)($_POST['book_id'] ?? 0);
@@ -23,13 +33,23 @@ class CartController extends Controller {
 
             $cartModel = $this->model('Cart');
             $cartModel->addItem($_SESSION['user_id'], $bookId, $quantity);
+            
+            if ($isAjax) {
+                $cartCount = $cartModel->getCartCount($_SESSION['user_id']);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => true, 'message' => 'Đã thêm sách vào giỏ hàng!', 'cartCount' => $cartCount]);
+                exit;
+            }
+
             $this->setFlash('success', 'Đã thêm sách vào giỏ hàng!');
         }
 
         // Redirect back
-        $referer = $_SERVER['HTTP_REFERER'] ?? BASE_URL;
-        header("Location: $referer");
-        exit;
+        if (!$isAjax) {
+            $referer = $_SERVER['HTTP_REFERER'] ?? BASE_URL;
+            header("Location: $referer");
+            exit;
+        }
     }
 
     public function update() {

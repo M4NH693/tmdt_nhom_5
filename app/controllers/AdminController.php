@@ -314,6 +314,23 @@ class AdminController extends Controller {
         $this->redirect('admin/users');
     }
 
+    public function deleteUser($id) {
+        $this->requireAdmin();
+        $userModel = $this->model('User');
+        $user = $userModel->findById($id);
+        if ($user) {
+            try {
+                $db = Database::getInstance()->getConnection();
+                $stmt = $db->prepare("DELETE FROM users WHERE user_id = ?");
+                $stmt->execute([$id]);
+                $this->setFlash('success', 'Xóa người dùng thành công!');
+            } catch (\PDOException $e) {
+                $this->setFlash('error', 'Không thể xóa người dùng này vì họ đã có dữ liệu liên quan (đơn hàng, v.v.).');
+            }
+        }
+        $this->redirect('admin/users');
+    }
+
     // ============ HELPER ============
     private function createSlug($str) {
         $str = mb_strtolower($str, 'UTF-8');

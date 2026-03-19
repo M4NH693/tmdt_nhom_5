@@ -33,6 +33,11 @@
                         <i class="fas fa-<?= $u->is_active ? 'lock' : 'unlock' ?>"></i>
                         <?= $u->is_active ? 'Khóa' : 'Mở khóa' ?>
                     </a>
+                    <a href="<?= BASE_URL ?>/admin/users/delete/<?= $u->user_id ?>" 
+                       class="admin-btn admin-btn-danger admin-btn-sm" style="background-color: #e63946; color: white;"
+                       onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này không? Hành động này không thể hoàn tác.')">
+                        <i class="fas fa-trash"></i> Xóa
+                    </a>
                     <?php else: ?>
                     <span style="color:var(--admin-text-muted);font-size:0.85rem;">—</span>
                     <?php endif; ?>
