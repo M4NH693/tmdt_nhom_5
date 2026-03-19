@@ -30,6 +30,7 @@ $router->add('', 'HomeController', 'index');
 $router->add('home', 'HomeController', 'index');
 $router->add('books', 'BookController', 'index');
 $router->add('book/{id}', 'BookController', 'detail');
+$router->add('book/review/{id}', 'BookController', 'submitReview');
 $router->add('category/{id}', 'BookController', 'category');
 $router->add('login', 'AuthController', 'login');
 $router->add('register', 'AuthController', 'register');

@@ -34,15 +34,59 @@ class BookController extends Controller {
             return;
         }
 
+        $canReview = false;
+        if ($this->isLoggedIn()) {
+            $orderModel = $this->model('Order');
+            $hasPurchased = $orderModel->hasPurchasedBook($_SESSION['user_id'], $id);
+            $hasReviewed = $bookModel->hasReviewedBook($_SESSION['user_id'], $id);
+            if ($hasPurchased && !$hasReviewed) {
+                $canReview = true;
+            }
+        }
+
         $data = [
             'pageTitle' => $book->title . ' - BookStore',
             'book'      => $book,
             'images'    => $bookModel->getImages($id),
             'reviews'   => $bookModel->getReviews($id),
             'related'   => $bookModel->getRelated($id, $book->category_id, 4),
+            'canReview' => $canReview,
         ];
 
         $this->view('books/detail', $data);
+    }
+
+    public function submitReview($id) {
+        $this->requireLogin();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $orderModel = $this->model('Order');
+            $bookModel = $this->model('Book');
+
+            $hasPurchased = $orderModel->hasPurchasedBook($_SESSION['user_id'], $id);
+            $hasReviewed = $bookModel->hasReviewedBook($_SESSION['user_id'], $id);
+
+            if (!$hasPurchased) {
+                $this->setFlash('error', 'Bạn phải mua sách này trước khi đánh giá.');
+            } elseif ($hasReviewed) {
+                $this->setFlash('error', 'Bạn đã đánh giá sách này rồi.');
+            } else {
+                $rating = max(1, min(5, (int)($_POST['rating'] ?? 5)));
+                $comment = trim($_POST['comment'] ?? '');
+
+                $db = Database::getInstance()->getConnection();
+                $stmt = $db->prepare("INSERT INTO reviews (user_id, book_id, rating, comment) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$_SESSION['user_id'], $id, $rating, $comment]);
+
+                // Update aggregate avg_rating
+                $stmt = $db->prepare("UPDATE books SET avg_rating = (SELECT AVG(rating) FROM reviews WHERE book_id = ?) WHERE book_id = ?");
+                $stmt->execute([$id, $id]);
+
+                $this->setFlash('success', 'Cảm ơn bạn đã đánh giá sách!');
+            }
+        }
+
+        $this->redirect('book/' . $id);
     }
 
     public function category($id) {

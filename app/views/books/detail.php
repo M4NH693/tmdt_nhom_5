@@ -115,6 +115,31 @@ for ($s = 1; $s <= 5; $s++) {
             <!-- Reviews -->
             <div class="reviews-section">
                 <h3>Đánh giá (<?= count($reviews ?? []) ?>)</h3>
+
+                <?php if (isset($canReview) && $canReview): ?>
+                <div class="review-form-container" style="margin-bottom: 25px; padding: 20px; background: var(--bg-secondary); border-radius: 8px;">
+                    <h4 style="margin-bottom: 15px;">Viết đánh giá của bạn</h4>
+                    <form action="<?= BASE_URL ?>/book/review/<?= $book->book_id ?>" method="POST">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label style="font-weight: 500;">Đánh giá (Sao):</label>
+                            <select name="rating" class="form-control" style="width: 140px; display: inline-block; margin-left: 10px; cursor: pointer;">
+                                <option value="5">⭐⭐⭐⭐⭐ 5</option>
+                                <option value="4">⭐⭐⭐⭐ 4</option>
+                                <option value="3">⭐⭐⭐ 3</option>
+                                <option value="2">⭐⭐ 2</option>
+                                <option value="1">⭐ 1</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <textarea name="comment" class="form-control" rows="4" placeholder="Chia sẻ cảm nhận của bạn về cuốn sách này..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Gửi đánh giá
+                        </button>
+                    </form>
+                </div>
+                <?php endif; ?>
+
                 <?php if (!empty($reviews)):
                     foreach ($reviews as $rv):
                         $rvStars = str_repeat('★', $rv->rating) . str_repeat('☆', 5 - $rv->rating);

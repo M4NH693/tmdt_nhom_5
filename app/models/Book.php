@@ -137,4 +137,12 @@ class Book extends Model {
              ORDER BY r.created_at DESC", [$bookId]
         );
     }
+
+    public function hasReviewedBook($userId, $bookId) {
+        $result = $this->queryOne(
+            "SELECT COUNT(*) as count FROM reviews WHERE user_id = ? AND book_id = ?",
+            [$userId, $bookId]
+        );
+        return $result && $result->count > 0;
+    }
 }

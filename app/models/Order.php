@@ -50,4 +50,15 @@ class Order extends Model {
             return false;
         }
     }
+
+    public function hasPurchasedBook($userId, $bookId) {
+        $result = $this->queryOne(
+            "SELECT COUNT(*) as count 
+             FROM order_items oi 
+             JOIN orders o ON o.order_id = oi.order_id 
+             WHERE o.user_id = ? AND oi.book_id = ? AND o.order_status = 'delivered'",
+            [$userId, $bookId]
+        );
+        return $result && $result->count > 0;
+    }
 }

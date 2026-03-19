@@ -368,7 +368,7 @@ BEGIN
         UPDATE books b
         INNER JOIN order_items oi ON oi.book_id = b.book_id
         SET b.total_sold = b.total_sold + oi.quantity,
-            b.stock_quantity = GREATEST(b.stock_quantity - oi.quantity, 0)
+            b.stock_quantity = GREATEST(CAST(b.stock_quantity AS SIGNED) - CAST(oi.quantity AS SIGNED), 0)
         WHERE oi.order_id = NEW.order_id;
     END IF;
 END //

@@ -281,6 +281,23 @@ class AdminController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $orderModel = $this->model('Order');
             $newStatus = $_POST['order_status'] ?? '';
+
+            if ($newStatus === 'delivered') {
+                $order = $orderModel->findById($id);
+                if ($order && $order->order_status !== 'delivered') {
+                    $items = $orderModel->getOrderItems($id);
+                    $bookModel = $this->model('Book');
+                    foreach ($items as $item) {
+                        $book = $bookModel->findById($item->book_id);
+                        if ($book && $book->stock_quantity < $item->quantity) {
+                            $this->setFlash('error', "Không đủ sách '{$book->title}' trong kho. Tồn: {$book->stock_quantity}, Yêu cầu: {$item->quantity}.");
+                            $this->redirect('admin/orders/detail/' . $id);
+                            return;
+                        }
+                    }
+                }
+            }
+
             $orderModel->update($id, [
                 'order_status' => $newStatus,
                 'confirmed_at' => $newStatus === 'confirmed' ? date('Y-m-d H:i:s') : null,
