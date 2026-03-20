@@ -9,23 +9,11 @@
                 <a href="<?= BASE_URL ?>/books" class="btn btn-primary btn-lg">
                     <i class="fas fa-book-open"></i> Khám phá ngay
                 </a>
+                <?php if (!isset($_SESSION['user_id'])): ?>
                 <a href="<?= BASE_URL ?>/register" class="btn btn-secondary btn-lg" style="border-color: rgba(255,255,255,0.3); color: white;">
                     <i class="fas fa-user-plus"></i> Đăng ký
                 </a>
-            </div>
-            <div class="hero-stats">
-                <div class="hero-stat">
-                    <div class="number">10K+</div>
-                    <div class="label">Đầu sách</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="number">50K+</div>
-                    <div class="label">Khách hàng</div>
-                </div>
-                <div class="hero-stat">
-                    <div class="number">4.8★</div>
-                    <div class="label">Đánh giá</div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
         <div class="hero-image">
