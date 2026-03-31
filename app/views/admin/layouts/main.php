@@ -35,7 +35,12 @@
                 $matches = explode(',', $item['match']);
                 $isActive = false;
                 foreach ($matches as $m) {
-                    if (strpos($currentUrl, trim($m)) === 0) $isActive = true;
+                    $m = trim($m);
+                    if ($m === 'admin') {
+                        if (rtrim($currentUrl, '/') === 'admin') $isActive = true;
+                    } elseif (strpos($currentUrl, $m) === 0) {
+                        $isActive = true;
+                    }
                 }
             ?>
             <a href="<?= BASE_URL ?>/<?= $item['url'] ?>" class="nav-item <?= $isActive ? 'active' : '' ?>">
