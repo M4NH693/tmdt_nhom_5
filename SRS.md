@@ -1,18 +1,6 @@
 # Tài Liệu Đặc Tả Yêu Cầu Phần Mềm (SRS)
 ## Hệ Thống Web Bán Sách Trực Tuyến — **Book4u**
 
----
-
-| Trường thông tin     | Nội dung                                    |
-|----------------------|---------------------------------------------|
-| **Tên dự án**        | Book4u — Website Bán Sách Trực Tuyến        |
-| **Phiên bản tài liệu** | 1.0                                       |
-| **Ngày tạo**         | 01/04/2026                                  |
-| **Nhóm thực hiện**   | Nhóm 5                                      |
-| **Công nghệ**        | PHP 8.3, MySQL 8.4, HTML/CSS/JavaScript     |
-| **Môi trường**       | Laragon (localhost), Apache, phpMyAdmin     |
-
----
 
 ## Mục Lục
 
