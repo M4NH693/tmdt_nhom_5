@@ -16,7 +16,7 @@
         <div class="container">
             <a href="<?= BASE_URL ?>/" class="logo">
                 <div class="logo-icon" style="background: transparent; border-radius: 10px;"><img src="<?= BASE_URL ?>/icon3.png" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;"></div>
-                BookStore
+                Book4u
             </a>
 
             <form class="search-bar" action="<?= BASE_URL ?>/search" method="GET" style="position:relative;">
