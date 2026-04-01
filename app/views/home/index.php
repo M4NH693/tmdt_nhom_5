@@ -172,6 +172,26 @@
     </div>
 </section>
 
+<?php if (!empty($knsBooks)): ?>
+<!-- SKILLS BOOKS -->
+<section class="section" style="background: var(--bg-secondary);">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">Sách <?= htmlspecialchars($knsCategory->category_name) ?></h2>
+                <p class="section-subtitle" style="margin-top: 14px;">Bồi dưỡng tâm hồn và phát triển bản thân</p>
+            </div>
+            <a href="<?= BASE_URL ?>/category/<?= $knsCategory->category_id ?>" class="view-all">Xem thêm <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="books-grid">
+            <?php foreach ($knsBooks as $book):
+                include APP_PATH . '/views/partials/book_card.php';
+            endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
 <!-- FEATURES -->
 <section class="section features">
     <div class="container">

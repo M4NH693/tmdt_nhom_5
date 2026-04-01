@@ -14,9 +14,7 @@ for ($s = 1; $s <= 5; $s++) {
             <div class="book-card-placeholder">📚<span><?= htmlspecialchars(mb_substr($book->title, 0, 30)) ?></span></div>
         <?php endif; ?>
         
-        <?php if (isset($book->created_at) && strtotime($book->created_at) > strtotime('-30 days')): ?>
-            <span class="book-card-badge badge-new">MỚI</span>
-        <?php elseif (isset($book->total_sold) && $book->total_sold > 100): ?>
+        <?php if (isset($book->total_sold) && $book->total_sold > 100): ?>
             <span class="book-card-badge badge-hot">HOT</span>
         <?php endif; ?>
 
