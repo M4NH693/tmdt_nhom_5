@@ -21,7 +21,7 @@
                 <div class="form-group" style="margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
                     <input type="checkbox" id="agree_terms" name="agree_terms" required style="width: auto; margin: 0;">
                     <label for="agree_terms" style="margin: 0; font-weight: normal; font-size: 0.9em;">
-                        Tôi đồng ý với <a href="<?= BASE_URL ?>/terms" target="_blank" style="color: var(--primary-color);">Điều khoản sử dụng</a>
+                        Tôi đồng ý với <a href="<?= BASE_URL ?>/terms" target="_blank" style="color: var(--primary-color);"><u style="color:#2d6a4f">Điều khoản sử dụng</u></a>
                     </label>
                 </div>
 

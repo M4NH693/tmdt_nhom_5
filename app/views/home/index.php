@@ -2,7 +2,7 @@
 <section class="hero">
     <div class="container">
         <div class="hero-content">
-            <div class="hero-badge">✨ Chào mừng đến với Book4u</div>
+            <div class="hero-badge">Chào mừng đến với Book4u</div>
             <h1>Khám phá thế giới <span>tri thức</span> qua từng trang sách</h1>
             <p>Hàng ngàn đầu sách hay, đa dạng thể loại, giao hàng nhanh chóng. Đọc sách là đầu tư cho tương lai!</p>
             <div class="hero-actions">

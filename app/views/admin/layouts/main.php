@@ -72,10 +72,6 @@
             <button class="sidebar-toggle" id="sidebarToggle">
                 <i class="fas fa-bars"></i>
             </button>
-            <div class="topbar-search">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Tìm kiếm...">
-            </div>
             <div class="topbar-right">
                 <div class="topbar-user">
                     <div class="user-avatar-sm"
