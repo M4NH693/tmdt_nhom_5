@@ -24,6 +24,11 @@ export function initAuth() {
                 return showMessage("Vui lòng nhập mật khẩu!", true);
             }
 
+            const agreeTerms = document.getElementById('agree_terms');
+            if (agreeTerms && !agreeTerms.checked) {
+                return showMessage("Bạn cần đồng ý với Điều khoản sử dụng để tiếp tục!", true);
+            }
+
             try {
                 const submitBtn = loginForm.querySelector('button[type="submit"]');
                 const originalText = submitBtn.innerHTML;
@@ -95,6 +100,11 @@ export function initAuth() {
             }
             if (pass !== repass) {
                 return showMessage("Mật khẩu nhập lại không khớp!", true);
+            }
+
+            const agreeTerms = document.getElementById('agree_terms');
+            if (agreeTerms && !agreeTerms.checked) {
+                return showMessage("Bạn cần đồng ý với Điều khoản sử dụng để tiếp tục!", true);
             }
 
             try {

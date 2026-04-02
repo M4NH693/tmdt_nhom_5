@@ -28,6 +28,7 @@ $router = new Router();
 // ========== PUBLIC ROUTES ==========
 $router->add('', 'HomeController', 'index');
 $router->add('home', 'HomeController', 'index');
+$router->add('terms', 'HomeController', 'terms');
 $router->add('books', 'BookController', 'index');
 $router->add('book/{id}', 'BookController', 'detail');
 $router->add('book/review/{id}', 'BookController', 'submitReview');

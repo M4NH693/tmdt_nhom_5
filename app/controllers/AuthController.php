@@ -11,6 +11,21 @@ class AuthController extends Controller {
             $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
             $email    = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
+            $agreeTerms = isset($_POST['agree_terms']);
+
+            if (!$agreeTerms) {
+                if ($isAjax) {
+                    echo json_encode(['status' => 'error', 'message' => 'Bạn cần đồng ý với Điều khoản sử dụng để tiếp tục!']);
+                    return;
+                }
+                $data = [
+                    'pageTitle' => 'Đăng nhập - BookStore',
+                    'error'     => 'Bạn cần đồng ý với Điều khoản sử dụng để tiếp tục!',
+                    'email'     => $email,
+                ];
+                $this->view('auth/login', $data);
+                return;
+            }
 
             $userModel = $this->model('User');
             $user = $userModel->findByEmail($email);
@@ -57,7 +72,10 @@ class AuthController extends Controller {
             $email           = trim($_POST['email'] ?? '');
             $password        = $_POST['password'] ?? '';
             $confirmPassword = $_POST['confirm_password'] ?? '';
+            $agreeTerms = isset($_POST['agree_terms']);
             $errors = [];
+
+            if (!$agreeTerms) $errors[] = 'Bạn cần đồng ý với Điều khoản sử dụng để tiếp tục!';
 
             if (empty($fullName)) $errors[] = 'Vui lòng nhập họ tên.';
             if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL))

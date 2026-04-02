@@ -113,9 +113,8 @@
                 <div class="footer-col">
                     <h4>Về chúng tôi</h4>
                     <a href="#">Giới thiệu</a>
-                    <a href="#">Tuyển dụng</a>
                     <a href="#">Liên hệ</a>
-                    <a href="#">Điều khoản sử dụng</a>
+                    <a href="<?= BASE_URL ?>/terms">Điều khoản sử dụng</a>
                 </div>
                 <div class="footer-col">
                     <h4>Hỗ trợ</h4>
