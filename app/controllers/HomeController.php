@@ -23,4 +23,11 @@ class HomeController extends Controller {
 
         $this->view('home/index', $data);
     }
+
+    public function terms() {
+        $data = [
+            'pageTitle' => 'Điều khoản sử dụng - BookStore',
+        ];
+        $this->view('home/terms', $data);
+    }
 }
