@@ -112,21 +112,21 @@
                 </div>
                 <div class="footer-col">
                     <h4>Về chúng tôi</h4>
-                    <a href="#">Giới thiệu</a>
-                    <a href="#">Liên hệ</a>
+                    <a href="<?= BASE_URL ?>/terms#gioi-thieu-chung">Giới thiệu</a>
+                    <a href="<?= BASE_URL ?>/terms#khieu-nai">Liên hệ</a>
                     <a href="<?= BASE_URL ?>/terms">Điều khoản sử dụng</a>
                 </div>
                 <div class="footer-col">
                     <h4>Hỗ trợ</h4>
-                    <a href="#">Hướng dẫn mua hàng</a>
-                    <a href="#">Chính sách đổi trả</a>
-                    <a href="#">Phương thức thanh toán</a>
-                    <a href="#">Vận chuyển</a>
+                    <a href="<?= BASE_URL ?>/terms#huong-dan-mua-hang">Hướng dẫn mua hàng</a>
+                    <a href="<?= BASE_URL ?>/terms#chinh-sach-doi-tra">Chính sách đổi trả</a>
+                    <a href="<?= BASE_URL ?>/terms#phuong-thuc-thanh-toan">Phương thức thanh toán</a>
+                    <a href="<?= BASE_URL ?>/terms#van-chuyen">Vận chuyển</a>
                 </div>
                 <div class="footer-col">
                     <h4>Liên hệ</h4>
                     <a href="#"><i class="fas fa-phone"></i> 1900 6868</a>
-                    <a href="#"><i class="fas fa-envelope"></i> vmanhsaber@gmail.com</a>
+                    <a href="#"><i class="fas fa-envelope"></i> Book4U@gmail.com</a>
                     <a href="#"><i class="fas fa-map-marker-alt"></i> Hà Nội, Việt Nam</a>
                 </div>
             </div>
