@@ -42,6 +42,8 @@ $router->add('cart/update', 'CartController', 'update');
 $router->add('cart/remove', 'CartController', 'remove');
 $router->add('checkout', 'OrderController', 'checkout');
 $router->add('orders', 'OrderController', 'history');
+$router->add('orders/cancel/{id}', 'OrderController', 'cancel');
+$router->add('orders/update-address/{id}', 'OrderController', 'updateAddress');
 $router->add('search/ajax', 'BookController', 'ajaxSearch');
 $router->add('search', 'BookController', 'search');
 $router->add('account', 'AccountController', 'dashboard');

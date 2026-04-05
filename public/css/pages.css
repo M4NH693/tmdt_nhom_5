@@ -1006,10 +1006,110 @@
 
 .order-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     padding: 16px 24px;
     border-top: 1px solid var(--border-light);
     background: var(--bg-secondary);
+}
+
+.order-footer-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-sm {
+    padding: 7px 16px;
+    font-size: 0.82rem;
+    border-radius: var(--radius-sm);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-outline:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn-danger-outline {
+    background: transparent;
+    border: 1.5px solid var(--error);
+    color: var(--error);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-danger-outline:hover {
+    background: var(--error);
+    color: #fff;
+}
+
+.order-address-form {
+    border-top: 1px solid var(--border-light);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; max-height: 0; }
+    to { opacity: 1; max-height: 400px; }
+}
+
+.address-form-header {
+    padding: 16px 24px;
+    background: linear-gradient(135deg, rgba(45, 106, 79, 0.06), rgba(45, 106, 79, 0.02));
+    border-bottom: 1px solid var(--border-light);
+}
+
+.address-form-header h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.address-form-body {
+    padding: 20px 24px;
+}
+
+.address-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.address-form-group {
+    margin-bottom: 14px;
+}
+
+.address-form-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.82rem;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+}
+
+.address-form-group .form-control {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+}
+
+.address-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 6px;
 }
 
 .order-total {
