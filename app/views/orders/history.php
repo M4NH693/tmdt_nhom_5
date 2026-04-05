@@ -42,8 +42,15 @@ $statusMap = [
                                 <?php endif; ?>
                             </div>
                             <div class="order-item-info">
-                                <h4><?= htmlspecialchars($item->title) ?></h4>
+                                <h4><a href="<?= BASE_URL ?>/book/<?= $item->book_id ?>" style="text-decoration:none; color:inherit;"><?= htmlspecialchars($item->title) ?></a></h4>
                                 <span>SL: <?= $item->quantity ?> × <?= number_format($item->unit_price, 0, ',', '.') ?>₫</span>
+                                <?php if ($order->order_status === 'delivered'): ?>
+                                    <div style="margin-top: 8px;">
+                                        <a href="<?= BASE_URL ?>/book/<?= $item->book_id ?>#reviews" class="btn btn-outline btn-sm" style="padding: 4px 10px; font-size: 0.8rem; border-color: #ffc107; color: #ff9800;">
+                                            <i class="fas fa-star" style="color: #ffc107; margin-right: 4px;"></i> Đánh giá
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <div style="font-weight:600;color:var(--error);">
                                 <?= number_format($item->total_price, 0, ',', '.') ?>₫

@@ -113,7 +113,7 @@ for ($s = 1; $s <= 5; $s++) {
             <?php endif; ?>
 
             <!-- Reviews -->
-            <div class="reviews-section">
+            <div class="reviews-section" id="reviews">
                 <h3>Đánh giá (<?= count($reviews ?? []) ?>)</h3>
 
                 <?php if (isset($canReview) && $canReview): ?>
@@ -143,18 +143,50 @@ for ($s = 1; $s <= 5; $s++) {
                 <?php if (!empty($reviews)):
                     foreach ($reviews as $rv):
                         $rvStars = str_repeat('★', $rv->rating) . str_repeat('☆', 5 - $rv->rating);
+                        $isOwner = isset($_SESSION['user_id']) && $_SESSION['user_id'] == $rv->user_id;
                 ?>
                 <div class="review-card">
-                    <div class="review-header">
+                    <div class="review-header" style="display: flex; align-items: center;">
                         <div class="review-avatar"><?= strtoupper(mb_substr($rv->full_name, 0, 1)) ?></div>
-                        <div>
+                        <div style="flex-grow: 1;">
                             <div class="review-name"><?= htmlspecialchars($rv->full_name) ?></div>
                             <div class="review-date"><?= date('d/m/Y', strtotime($rv->created_at)) ?></div>
                         </div>
+                        <?php if ($isOwner): ?>
+                        <div class="review-actions">
+                            <button class="btn btn-outline btn-sm" onclick="toggleEditReview(<?= $rv->review_id ?>)" style="padding: 4px 10px; font-size: 0.75rem;"><i class="fas fa-edit"></i> Sửa</button>
+                            <form method="POST" action="<?= BASE_URL ?>/book/review/delete/<?= $book->book_id ?>" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa đánh giá này?');">
+                                <button type="submit" class="btn btn-danger-outline btn-sm" style="padding: 4px 10px; font-size: 0.75rem;"><i class="fas fa-trash-alt"></i> Xóa</button>
+                            </form>
+                        </div>
+                        <?php endif; ?>
                     </div>
-                    <div class="review-stars"><?= $rvStars ?></div>
-                    <?php if (!empty($rv->comment)): ?>
-                        <div class="review-text"><?= nl2br(htmlspecialchars($rv->comment)) ?></div>
+                    <div id="review-display-<?= $rv->review_id ?>">
+                        <div class="review-stars"><?= $rvStars ?></div>
+                        <?php if (!empty($rv->comment)): ?>
+                            <div class="review-text"><?= nl2br(htmlspecialchars($rv->comment)) ?></div>
+                        <?php endif; ?>
+                    </div>
+                    <?php if ($isOwner): ?>
+                    <div id="review-edit-<?= $rv->review_id ?>" style="display: none; margin-top: 15px; background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border-light);">
+                        <form method="POST" action="<?= BASE_URL ?>/book/review/edit/<?= $book->book_id ?>">
+                            <div class="form-group" style="margin-bottom: 10px;">
+                                <label style="font-weight: 500; font-size: 0.9rem;">Sửa số sao:</label>
+                                <select name="rating" class="form-control" style="width: auto; display: inline-block; margin-left: 10px; padding: 5px 10px;">
+                                    <option value="5" <?= $rv->rating == 5 ? 'selected' : '' ?>>⭐⭐⭐⭐⭐ 5</option>
+                                    <option value="4" <?= $rv->rating == 4 ? 'selected' : '' ?>>⭐⭐⭐⭐ 4</option>
+                                    <option value="3" <?= $rv->rating == 3 ? 'selected' : '' ?>>⭐⭐⭐ 3</option>
+                                    <option value="2" <?= $rv->rating == 2 ? 'selected' : '' ?>>⭐⭐ 2</option>
+                                    <option value="1" <?= $rv->rating == 1 ? 'selected' : '' ?>>⭐ 1</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 10px;">
+                                <textarea name="comment" class="form-control" rows="3" required><?= htmlspecialchars($rv->comment) ?></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Lưu</button>
+                            <button type="button" class="btn btn-outline btn-sm" onclick="toggleEditReview(<?= $rv->review_id ?>)">Hủy</button>
+                        </form>
+                    </div>
                     <?php endif; ?>
                 </div>
                 <?php endforeach;
@@ -165,6 +197,20 @@ for ($s = 1; $s <= 5; $s++) {
         </div>
     </div>
 </div>
+
+<script>
+function toggleEditReview(reviewId) {
+    const displayDiv = document.getElementById('review-display-' + reviewId);
+    const editDiv = document.getElementById('review-edit-' + reviewId);
+    if (editDiv.style.display === 'none') {
+        displayDiv.style.display = 'none';
+        editDiv.style.display = 'block';
+    } else {
+        displayDiv.style.display = 'block';
+        editDiv.style.display = 'none';
+    }
+}
+</script>
 
 <!-- Related Books -->
 <?php if (!empty($related)): ?>

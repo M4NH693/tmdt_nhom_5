@@ -89,6 +89,41 @@ class BookController extends Controller {
         $this->redirect('book/' . $id);
     }
 
+    public function editReview($id) {
+        $this->requireLogin();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $rating = max(1, min(5, (int)($_POST['rating'] ?? 5)));
+            $comment = trim($_POST['comment'] ?? '');
+
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("UPDATE reviews SET rating = ?, comment = ? WHERE user_id = ? AND book_id = ?");
+            if ($stmt->execute([$rating, $comment, $_SESSION['user_id'], $id])) {
+                $this->setFlash('success', 'Cập nhật đánh giá thành công!');
+            } else {
+                $this->setFlash('error', 'Cập nhật đánh giá thất bại.');
+            }
+        }
+
+        $this->redirect('book/' . $id . '#reviews');
+    }
+
+    public function deleteReview($id) {
+        $this->requireLogin();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("DELETE FROM reviews WHERE user_id = ? AND book_id = ?");
+            if ($stmt->execute([$_SESSION['user_id'], $id])) {
+                $this->setFlash('success', 'Đã xóa đánh giá thành công!');
+            } else {
+                $this->setFlash('error', 'Không thể xóa đánh giá.');
+            }
+        }
+
+        $this->redirect('book/' . $id . '#reviews');
+    }
+
     public function category($id) {
         $bookModel = $this->model('Book');
         $categoryModel = $this->model('Category');

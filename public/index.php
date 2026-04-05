@@ -32,6 +32,8 @@ $router->add('terms', 'HomeController', 'terms');
 $router->add('books', 'BookController', 'index');
 $router->add('book/{id}', 'BookController', 'detail');
 $router->add('book/review/{id}', 'BookController', 'submitReview');
+$router->add('book/review/edit/{id}', 'BookController', 'editReview');
+$router->add('book/review/delete/{id}', 'BookController', 'deleteReview');
 $router->add('category/{id}', 'BookController', 'category');
 $router->add('login', 'AuthController', 'login');
 $router->add('register', 'AuthController', 'register');
