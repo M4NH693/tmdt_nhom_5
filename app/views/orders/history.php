@@ -52,8 +52,55 @@ $statusMap = [
                     <?php endforeach; endif; ?>
                 </div>
                 <div class="order-footer">
+                    <div class="order-footer-actions">
+                        <?php if ($order->order_status === 'pending'): ?>
+                            <button type="button" class="btn btn-outline btn-sm order-edit-addr-btn" 
+                                    onclick="toggleAddressForm(<?= $order->order_id ?>)">
+                                <i class="fas fa-edit"></i> Cập nhật địa chỉ
+                            </button>
+                            <form method="POST" action="<?= BASE_URL ?>/orders/cancel/<?= $order->order_id ?>" 
+                                  onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng <?= $order->order_code ?>?');" style="display:inline;">
+                                <button type="submit" class="btn btn-danger-outline btn-sm">
+                                    <i class="fas fa-times-circle"></i> Hủy đơn
+                                </button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
                     <span>Tổng cộng: <span class="order-total"><?= number_format($order->total_amount, 0, ',', '.') ?>₫</span></span>
                 </div>
+
+                <?php if ($order->order_status === 'pending'): ?>
+                <div class="order-address-form" id="address-form-<?= $order->order_id ?>" style="display:none;">
+                    <form method="POST" action="<?= BASE_URL ?>/orders/update-address/<?= $order->order_id ?>">
+                        <div class="address-form-header">
+                            <h4><i class="fas fa-map-marker-alt"></i> Cập nhật địa chỉ giao hàng</h4>
+                        </div>
+                        <div class="address-form-body">
+                            <div class="address-form-row">
+                                <div class="address-form-group">
+                                    <label>Người nhận</label>
+                                    <input type="text" name="receiver_name" class="form-control"
+                                           value="<?= htmlspecialchars($order->receiver_name ?? '') ?>" required>
+                                </div>
+                                <div class="address-form-group">
+                                    <label>Số điện thoại</label>
+                                    <input type="text" name="receiver_phone" class="form-control"
+                                           value="<?= htmlspecialchars($order->receiver_phone ?? '') ?>" required>
+                                </div>
+                            </div>
+                            <div class="address-form-group">
+                                <label>Địa chỉ giao hàng</label>
+                                <input type="text" name="shipping_address" class="form-control"
+                                       value="<?= htmlspecialchars($order->shipping_address ?? '') ?>" required>
+                            </div>
+                            <div class="address-form-actions">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="toggleAddressForm(<?= $order->order_id ?>)">Hủy bỏ</button>
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Lưu thay đổi</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <?php endif; ?>
             </div>
             <?php endforeach; ?>
         <?php else: ?>
@@ -66,3 +113,12 @@ $statusMap = [
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+function toggleAddressForm(orderId) {
+    const form = document.getElementById('address-form-' + orderId);
+    if (form) {
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+}
+</script>

@@ -312,13 +312,22 @@ class AdminController extends Controller {
                 }
             }
 
-            $orderModel->update($id, [
+            $updateData = [
                 'order_status' => $newStatus,
                 'confirmed_at' => $newStatus === 'confirmed' ? date('Y-m-d H:i:s') : null,
                 'shipped_at'   => $newStatus === 'shipping' ? date('Y-m-d H:i:s') : null,
                 'delivered_at' => $newStatus === 'delivered' ? date('Y-m-d H:i:s') : null,
                 'cancelled_at' => $newStatus === 'cancelled' ? date('Y-m-d H:i:s') : null,
-            ]);
+            ];
+
+            // Tự động cập nhật trạng thái thanh toán theo trạng thái đơn hàng
+            if ($newStatus === 'delivered') {
+                $updateData['payment_status'] = 'paid';
+            } elseif ($newStatus === 'returned') {
+                $updateData['payment_status'] = 'refunded';
+            }
+
+            $orderModel->update($id, $updateData);
             $this->setFlash('success', 'Cập nhật trạng thái đơn hàng thành công!');
         }
         $this->redirect('admin/orders/detail/' . $id);

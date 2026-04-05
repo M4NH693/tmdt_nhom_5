@@ -76,4 +76,59 @@ class OrderController extends Controller {
 
         $this->view('orders/history', $data);
     }
+
+    public function cancel($id) {
+        $this->requireLogin();
+        $orderModel = $this->model('Order');
+        $order = $orderModel->findById($id);
+
+        // Kiểm tra đơn hàng thuộc về user và đang ở trạng thái pending
+        if (!$order || $order->user_id != $_SESSION['user_id'] || $order->order_status !== 'pending') {
+            $this->setFlash('error', 'Không thể hủy đơn hàng này.');
+            $this->redirect('orders');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $orderModel->update($id, [
+                'order_status' => 'cancelled',
+                'cancelled_at' => date('Y-m-d H:i:s'),
+            ]);
+            $this->setFlash('success', 'Đã hủy đơn hàng ' . $order->order_code . ' thành công.');
+        }
+        $this->redirect('orders');
+    }
+
+    public function updateAddress($id) {
+        $this->requireLogin();
+        $orderModel = $this->model('Order');
+        $order = $orderModel->findById($id);
+
+        // Kiểm tra đơn hàng thuộc về user và đang ở trạng thái pending
+        if (!$order || $order->user_id != $_SESSION['user_id'] || $order->order_status !== 'pending') {
+            $this->setFlash('error', 'Không thể cập nhật đơn hàng này.');
+            $this->redirect('orders');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $receiverName = trim($_POST['receiver_name'] ?? '');
+            $receiverPhone = trim($_POST['receiver_phone'] ?? '');
+            $shippingAddress = trim($_POST['shipping_address'] ?? '');
+
+            if (empty($receiverName) || empty($receiverPhone) || empty($shippingAddress)) {
+                $this->setFlash('error', 'Vui lòng điền đầy đủ thông tin.');
+                $this->redirect('orders');
+                return;
+            }
+
+            $orderModel->update($id, [
+                'receiver_name'    => $receiverName,
+                'receiver_phone'   => $receiverPhone,
+                'shipping_address' => $shippingAddress,
+            ]);
+            $this->setFlash('success', 'Cập nhật địa chỉ giao hàng thành công!');
+        }
+        $this->redirect('orders');
+    }
 }
