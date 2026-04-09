@@ -20,20 +20,13 @@
                            value="<?= htmlspecialchars($email ?? '') ?>" required autofocus>
                 </div>
 
-                <div class="form-group">
-                    <label for="full_name"><i class="fas fa-user"></i> Họ và tên</label>
-                    <input type="text" id="full_name" name="full_name" class="form-control"
-                           placeholder="Nhập đúng họ tên đã đăng ký"
-                           value="<?= htmlspecialchars($full_name ?? '') ?>" required>
-                </div>
-
                 <div style="background: rgba(45,106,79,0.06); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85em; color: var(--text-secondary);">
                     <i class="fas fa-info-circle" style="color: var(--primary);"></i>
-                    Vui lòng nhập chính xác email và họ tên đã đăng ký để xác minh danh tính.
+                    Hệ thống sẽ gửi một mã xác thực (OTP) gồm 6 chữ số tới hòm thư của bạn nếu email này tồn tại trong hệ thống.
                 </div>
 
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-shield-alt"></i> Xác minh & Tiếp tục
+                    <i class="fas fa-paper-plane"></i> Gửi khôi phục
                 </button>
             </form>
 

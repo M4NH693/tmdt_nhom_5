@@ -37,4 +37,16 @@ class User extends Model {
     public function updateName($userId, $fullName) {
         return $this->update($userId, ['full_name' => $fullName]);
     }
+
+    public function saveResetToken($email, $token, $expiresAt) {
+        return $this->query("UPDATE users SET reset_token = ?, reset_expires_at = ? WHERE email = ?", [$token, $expiresAt, $email]);
+    }
+
+    public function findByResetToken($token) {
+        return $this->queryOne("SELECT * FROM users WHERE reset_token = ?", [$token]);
+    }
+
+    public function clearResetToken($userId) {
+        return $this->query("UPDATE users SET reset_token = NULL, reset_expires_at = NULL WHERE user_id = ?", [$userId]);
+    }
 }

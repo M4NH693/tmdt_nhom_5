@@ -135,57 +135,110 @@ class AuthController extends Controller {
         $data = ['pageTitle' => 'Quên mật khẩu - BookStore'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email    = trim($_POST['email'] ?? '');
-            $fullName = trim($_POST['full_name'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $data['email'] = $email;
 
-            $data['email']     = $email;
-            $data['full_name'] = $fullName;
-
-            // Validate đầu vào
-            $errors = [];
             if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errors[] = 'Vui lòng nhập email hợp lệ.';
-            }
-            if (empty($fullName)) {
-                $errors[] = 'Vui lòng nhập họ tên.';
-            }
-
-            if (!empty($errors)) {
-                $data['errors'] = $errors;
+                $data['errors'] = ['Vui lòng nhập email hợp lệ.'];
                 $this->view('auth/forgot_password', $data);
                 return;
             }
 
-            // Kiểm tra email tồn tại
             $userModel = $this->model('User');
             $user = $userModel->findByEmail($email);
 
-            if (!$user) {
-                $data['errors'] = ['Email này không tồn tại trong hệ thống.'];
-                $this->view('auth/forgot_password', $data);
-                return;
+            if ($user) {
+                // Tạo OTP ngẫu nhiên 6 chữ số
+                $otp = sprintf("%06d", mt_rand(0, 999999));
+                $expiresAt = date('Y-m-d H:i:s', time() + 900); // 15 phút
+
+                $userModel->saveResetToken($email, $otp, $expiresAt);
+                $_SESSION['otp_email'] = $email;
+
+                // Chuẩn bị nội dung email
+                $subject = "Mã xác thực khôi phục mật khẩu - BookStore";
+                $body = "
+                <div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;'>
+                    <div style='background-color: #0f172a; color: #fff; padding: 20px; text-align: center;'>
+                        <h2 style='margin: 0;'>BookStore</h2>
+                    </div>
+                    <div style='padding: 20px;'>
+                        <p>Xin chào <strong>{$user->full_name}</strong>,</p>
+                        <p>Chúng tôi nhận được yêu cầu khôi phục mật khẩu cho tài khoản liên kết với địa chỉ email này.</p>
+                        <p>Mã xác thực (OTP) của bạn là:</p>
+                        <div style='text-align: center; margin: 30px 0;'>
+                            <span style='background-color: #f1f5f9; color: #2563eb; padding: 15px 30px; border-radius: 8px; font-size: 28px; font-weight: bold; letter-spacing: 5px; border: 2px dashed #cbd5e1; display: inline-block;'>{$otp}</span>
+                        </div>
+                        <p>Vui lòng nhập mã này trên trang web để đặt lại mật khẩu. Mã này có hiệu lực trong vòng <strong>15 phút</strong>.</p>
+                        <p>Nếu bạn không thực hiện yêu cầu này, vui lòng báo cáo hoặc bỏ qua email và không chia sẻ mã này cho bất kỳ ai.</p>
+                    </div>
+                    <div style='background-color: #f8fafc; color: #64748b; padding: 15px; text-align: center; font-size: 0.8em;'>
+                        &copy; " . date('Y') . " BookStore. All rights reserved.
+                    </div>
+                </div>";
+
+                require_once __DIR__ . '/../core/Mailer.php';
+                $mailer = new Mailer();
+                if ($mailer->sendMail($email, $subject, $body)) {
+                    $this->setFlash('success', 'Mã xác thực OTP đã được gửi tới hộp thư của bạn. Vui lòng kiểm tra email.');
+                } else {
+                    $this->setFlash('error', 'Không thể gửi email lúc này do lỗi hệ thống. Vui lòng thử lại sau.');
+                    $this->redirect('forgot-password');
+                    return;
+                }
+            } else {
+                // Bảo mật: Không thông báo email tồn tại hay không, trả về chung log success để tránh dò rỉ tài khoản
+                $_SESSION['otp_email'] = $email;
+                $this->setFlash('success', 'Nếu email hợp lệ, mã xác thực OTP đã được gửi tới hộp thư của bạn. Vui lòng kiểm tra email.');
             }
 
-            // So khớp họ tên
-            $nameMatch = mb_strtolower($fullName) === mb_strtolower($user->full_name);
-
-            if (!$nameMatch) {
-                $data['errors'] = ['Họ tên không khớp với tài khoản. Vui lòng kiểm tra lại.'];
-                $this->view('auth/forgot_password', $data);
-                return;
-            }
-
-            // Xác minh thành công → tạo token reset
-            $token = bin2hex(random_bytes(32));
-            $_SESSION['reset_token'] = $token;
-            $_SESSION['reset_email'] = $email;
-            $_SESSION['reset_expires'] = time() + 900; // 15 phút
-
-            $this->redirect('reset-password?token=' . $token);
+            $this->redirect('verify-otp');
             return;
         }
 
         $this->view('auth/forgot_password', $data);
+    }
+
+    public function verifyOtp() {
+        if ($this->isLoggedIn()) {
+            $this->redirect('');
+            return;
+        }
+
+        if (empty($_SESSION['otp_email'])) {
+            $this->redirect('forgot-password');
+            return;
+        }
+
+        $data = ['pageTitle' => 'Nhập Mã Xác Thực - BookStore'];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $otpInput = trim($_POST['otp'] ?? '');
+
+            if (empty($otpInput) || strlen($otpInput) !== 6) {
+                $data['errors'] = ['Vui lòng nhập đầy đủ 6 chữ số mã xác thực.'];
+                $this->view('auth/verify_otp', $data);
+                return;
+            }
+
+            $userModel = $this->model('User');
+            // Truy vấn lấy user theo email trong session
+            $user = $userModel->findByEmail($_SESSION['otp_email']);
+
+            if (!$user || $user->reset_token !== $otpInput || strtotime($user->reset_expires_at) < time()) {
+                $data['errors'] = ['Mã xác thực không hợp lệ hoặc đã hết hạn. Vui lòng kiểm tra lại.'];
+                $this->view('auth/verify_otp', $data);
+                return;
+            }
+
+            // OTP đúng
+            $_SESSION['otp_verified'] = true;
+            $this->setFlash('success', 'Xác minh thành công! Vui lòng nhập mật khẩu mới.');
+            $this->redirect('reset-password');
+            return;
+        }
+
+        $this->view('auth/verify_otp', $data);
     }
 
     public function resetPassword() {
@@ -194,21 +247,14 @@ class AuthController extends Controller {
             return;
         }
 
-        $token = $_GET['token'] ?? ($_POST['token'] ?? '');
-        $data = ['pageTitle' => 'Đặt lại mật khẩu - BookStore'];
-
-        // Kiểm tra token hợp lệ
-        if (empty($token) 
-            || !isset($_SESSION['reset_token']) 
-            || $token !== $_SESSION['reset_token']
-            || time() > ($_SESSION['reset_expires'] ?? 0)) {
-            $this->setFlash('error', 'Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn. Vui lòng thử lại.');
+        // Bắt buộc phải qua bước verify OTP
+        if (empty($_SESSION['otp_verified']) || empty($_SESSION['otp_email'])) {
+            $this->setFlash('error', 'Vui lòng xác minh mã OTP trước.');
             $this->redirect('forgot-password');
             return;
         }
 
-        $data['token'] = $token;
-        $data['email'] = $_SESSION['reset_email'];
+        $data = ['pageTitle' => 'Đặt lại mật khẩu - BookStore'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $newPassword = $_POST['new_password'] ?? '';
@@ -224,20 +270,20 @@ class AuthController extends Controller {
 
             if (empty($errors)) {
                 $userModel = $this->model('User');
-                $user = $userModel->findByEmail($_SESSION['reset_email']);
-
+                $user = $userModel->findByEmail($_SESSION['otp_email']);
+                
                 if ($user) {
                     $userModel->updatePassword($user->user_id, $newPassword);
-
-                    // Xóa token reset
-                    unset($_SESSION['reset_token'], $_SESSION['reset_email'], $_SESSION['reset_expires']);
-
-                    $this->setFlash('success', 'Đặt lại mật khẩu thành công! Hãy đăng nhập với mật khẩu mới.');
-                    $this->redirect('login');
-                    return;
-                } else {
-                    $errors[] = 'Có lỗi xảy ra, vui lòng thử lại.';
+                    $userModel->clearResetToken($user->user_id);
                 }
+
+                // Dọn dẹp session
+                unset($_SESSION['otp_email']);
+                unset($_SESSION['otp_verified']);
+
+                $this->setFlash('success', 'Đặt lại mật khẩu thành công! Hãy đăng nhập với mật khẩu mới.');
+                $this->redirect('login');
+                return;
             }
 
             $data['errors'] = $errors;

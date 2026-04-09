@@ -2,7 +2,7 @@
     <div class="auth-container">
         <div class="auth-card">
             <h1><i class="fas fa-lock-open"></i> Đặt lại mật khẩu</h1>
-            <p class="subtitle">Tạo mật khẩu mới cho tài khoản <strong><?= htmlspecialchars($email ?? '') ?></strong></p>
+            <p class="subtitle">Tạo mật khẩu mới cho tài khoản <strong><?= htmlspecialchars($_SESSION['otp_email'] ?? '') ?></strong></p>
 
             <?php if (!empty($errors)): ?>
                 <div class="alert alert-danger">
@@ -12,8 +12,7 @@
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="<?= BASE_URL ?>/reset-password?token=<?= htmlspecialchars($token ?? '') ?>" novalidate>
-                <input type="hidden" name="token" value="<?= htmlspecialchars($token ?? '') ?>">
+            <form method="POST" action="<?= BASE_URL ?>/reset-password" novalidate>
 
                 <div class="form-group">
                     <label for="new_password">Mật khẩu mới</label>

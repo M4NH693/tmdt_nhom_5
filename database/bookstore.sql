@@ -27,6 +27,8 @@ CREATE TABLE users (
     avatar_url    VARCHAR(500) DEFAULT NULL,
     role          ENUM('customer', 'admin') NOT NULL DEFAULT 'customer',
     is_active     TINYINT(1) NOT NULL DEFAULT 1 COMMENT '1 = hoạt động, 0 = bị khóa',
+    reset_token         VARCHAR(64) DEFAULT NULL COMMENT 'Token dùng để đặt lại mật khẩu',
+    reset_expires_at    DATETIME DEFAULT NULL COMMENT 'Thời hạn hiệu lực của token',
     created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 

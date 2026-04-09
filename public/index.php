@@ -39,6 +39,7 @@ $router->add('login', 'AuthController', 'login');
 $router->add('register', 'AuthController', 'register');
 $router->add('logout', 'AuthController', 'logout');
 $router->add('forgot-password', 'AuthController', 'forgotPassword');
+$router->add('verify-otp', 'AuthController', 'verifyOtp');
 $router->add('reset-password', 'AuthController', 'resetPassword');
 $router->add('cart', 'CartController', 'index');
 $router->add('cart/add', 'CartController', 'add');
