@@ -165,7 +165,7 @@ class AuthController extends Controller
                 $subject = "Mã xác thực khôi phục mật khẩu - Book4U";
                 $body = "
                 <div style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;'>
-                    <div style='background-color: #0f172a; color: #fff; padding: 20px; text-align: center;'>
+                    <div style='background-color: #2D6A4F; color: #fff; padding: 20px; text-align: center;'>
                         <h2 style='margin: 0;'>Book4U</h2>
                     </div>
                     <div style='padding: 20px;'>
