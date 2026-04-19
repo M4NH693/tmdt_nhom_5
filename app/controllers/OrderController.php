@@ -24,7 +24,7 @@ class OrderController extends Controller {
             }
 
             if (!empty($stockErrors)) {
-                $errorMsg = "Đơn đặt hàng vượt quá số lượng trong kho, nếu bạn vẫn muốn đặt thì hãy liên hệ với sales";
+                $errorMsg = "Đơn đặt hàng vượt quá số lượng trong kho, nếu bạn vẫn muốn đặt thì hãy liên hệ với gmail: book4u@gmail.com";
                 $this->setFlash('error', $errorMsg);
                 $this->redirect('cart');
                 return;
